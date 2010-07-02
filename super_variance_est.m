@@ -40,33 +40,41 @@ for drilldown = 1:pilottrials
     curfnum = fnum(curd+1); % file number under current dir	
     level_est_times(level) = level_est_times(level) + 1;
 	square_of_sum(level) = (square_of_sum(level) + curfnum / curp);
-	sum_of_square(level) = 0 + (curfnum/curp).^2;
+	sum_of_square(level) = sum_of_square(level) + (curfnum/curp).^2;
     sum1 = sum1 + curfnum/curp;
 	    
 	% compute variance --sum up all the level variances
 %	sum_of_square
 %	square_of_sum
-    third_variance=sum_of_square - (square_of_sum/drilldown).^2;
-	third_std_variance(drilldown)=sqrt(sum(third_variance))
+    third_variance=(sum_of_square - abs(square_of_sum/drilldown).^2);
+	third_std_variance(drilldown)=sqrt(sum(third_variance));
 	
 	% compute real variance
 	individual_count_res(drilldown) = sum1;
 	sum1 = 0;
 	first_variance = (individual_count_res - real_count).^2;
-	first_std_variance(drilldown) = sqrt(sum(first_variance))
+	first_std_variance(drilldown) = sqrt(sum(first_variance)/drilldown^2);
 	
 	%compute accumulating variance
-	count_res(drilldown) = sum(individual_count_res)/drilldown;
-	accu_first_variance = (count_res - real_count).^2;
-	accu_first_std_variance(drilldown) = sqrt(sum(accu_first_variance))
+	%count_res(drilldown) = sum(individual_count_res)/drilldown;
+	%accu_first_variance = (count_res - real_count).^2;
+	accu_first_std_variance(drilldown) = sqrt(var(individual_count_res)/drilldown);%sqrt(sum(accu_first_variance)/drilldown);
 
+    accu_first_std_variance(drilldown) = accu_first_std_variance(drilldown)*sqrt(drilldown/(drilldown-1));
+    
 	%compute second variance
-	our_count = count_res(drilldown);
-	second_variance = (individual_count_res - our_count).^2;
-	second_std_variance(drilldown) = sqrt(sum(second_variance))	
+	%our_count = count_res(drilldown);
+	%second_variance = (individual_count_res - our_count).^2;
+	%second_std_variance(drilldown) = sqrt(sum(second_variance)/drilldown^2);	
 	
 end;
+
 ' drill down ok'
-count_res(pilottrials)
-mean(individual_count_res)
+%count_res(pilottrials)
+%mean(individual_count_res)
+plot(first_std_variance, '.r')
+hold on
+plot(accu_first_std_variance, '*g')
+%hold on
+%plot(third_std_variance, '-o')
 
